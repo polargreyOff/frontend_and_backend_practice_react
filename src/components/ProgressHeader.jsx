@@ -18,15 +18,15 @@ function ProgressHeader({ technologies }) {
                     <span className="stat-label">Всего технологий</span>
                 </div>
                 <div className="stat-item">
-                    <span className="stat-number">{completed}</span>
+                    <span className="stat-number completed">{completed}</span>
                     <span className="stat-label">Изучено</span>
                 </div>
                 <div className="stat-item">
-                    <span className="stat-number">{inProgress}</span>
+                    <span className="stat-number in-progress">{inProgress}</span>
                     <span className="stat-label">В процессе</span>
                 </div>
                 <div className="stat-item">
-                    <span className="stat-number">{notStarted}</span>
+                    <span className="stat-number not-started">{notStarted}</span>
                     <span className="stat-label">Не начато</span>
                 </div>
             </div>
@@ -34,6 +34,7 @@ function ProgressHeader({ technologies }) {
             <div className="progress-bar-container">
                 <div className="progress-info">
                     <span>Общий прогресс: {completionPercentage}%</span>
+                    <span>{completed} из {total}</span>
                 </div>
                 <div className="progress-bar">
                     <div 

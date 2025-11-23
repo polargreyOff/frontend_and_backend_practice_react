@@ -1,9 +1,13 @@
 import './App.css';
+import { useState } from 'react';
 import TechnologyCard from './components/TechnologyCard';
 import ProgressHeader from './components/ProgressHeader';
+import QuickActions from './components/QuickActions';
+import FilterTabs from './components/FilterTabs';
 
 function App() {
-    const technologies = [
+    // Состояние для массива технологий
+    const [technologies, setTechnologies] = useState([
         { 
             id: 1, 
             title: 'HTML CSS', 
@@ -40,7 +44,47 @@ function App() {
             description: 'devops штучки', 
             status: 'not-started' 
         }
-    ];
+    ]);
+
+    // Состояние для активного фильтра
+    const [activeFilter, setActiveFilter] = useState('all');
+
+    // Функция для изменения статуса технологии
+    const handleStatusChange = (id, newStatus) => {
+        setTechnologies(prevTech => 
+            prevTech.map(tech => 
+                tech.id === id ? { ...tech, status: newStatus } : tech
+            )
+        );
+    };
+
+    // Функция для отметки всех как выполненных
+    const markAllCompleted = () => {
+        setTechnologies(prevTech => 
+            prevTech.map(tech => ({ ...tech, status: 'completed' }))
+        );
+    };
+
+    // Функция для сброса всех статусов
+    const resetAllStatuses = () => {
+        setTechnologies(prevTech => 
+            prevTech.map(tech => ({ ...tech, status: 'not-started' }))
+        );
+    };
+
+    // Фильтрация технологий по активному фильтру
+    const filteredTechnologies = technologies.filter(tech => {
+        switch(activeFilter) {
+            case 'completed':
+                return tech.status === 'completed';
+            case 'in-progress':
+                return tech.status === 'in-progress';
+            case 'not-started':
+                return tech.status === 'not-started';
+            default:
+                return true; // 'all'
+        }
+    });
 
     return (
         <div className="App">
@@ -51,15 +95,28 @@ function App() {
 
             <ProgressHeader technologies={technologies} />
             
+            <QuickActions 
+                onMarkAllCompleted={markAllCompleted}
+                onResetAllStatuses={resetAllStatuses}
+            />
+
+            <FilterTabs 
+                activeFilter={activeFilter}
+                onFilterChange={setActiveFilter}
+                technologies={technologies}
+            />
+            
             <main className="technologies-container">
-                <h2>Карта технологий</h2>
+                <h2>Дорожная карта технологий ({filteredTechnologies.length})</h2>
                 <div className="technologies-list">
-                    {technologies.map(technology => (
+                    {filteredTechnologies.map(technology => (
                         <TechnologyCard
                             key={technology.id}
+                            id={technology.id}
                             title={technology.title}
                             description={technology.description}
                             status={technology.status}
+                            onStatusChange={handleStatusChange}
                         />
                     ))}
                 </div>

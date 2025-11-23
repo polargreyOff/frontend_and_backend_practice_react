@@ -75,4 +75,12 @@
     .technologies-container {
         padding: 15px;
     }
+    
+    .actions-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .tabs {
+        justify-content: center;
+    }
 }

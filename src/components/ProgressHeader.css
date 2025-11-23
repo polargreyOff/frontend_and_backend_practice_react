@@ -20,6 +20,11 @@
     background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
 }
 
 .stat-number {
@@ -27,6 +32,18 @@
     font-size: 2em;
     font-weight: bold;
     margin-bottom: 5px;
+}
+
+.stat-number.completed {
+    color: #4caf50;
+}
+
+.stat-number.in-progress {
+    color: #ff9800;
+}
+
+.stat-number.not-started {
+    color: #f44336;
 }
 
 .stat-label {

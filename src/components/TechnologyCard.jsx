@@ -1,21 +1,24 @@
 import './TechnologyCard.css';
 
-function TechnologyCard({ id, title, description, status, onStatusChange }) {
-    const handleClick = () => {
-        // Определяем следующий статус в цикле
+function TechnologyCard({ technology, onStatusChange, onNotesChange }) {
+    const { id, title, description, status, notes } = technology;
+
+    const handleCardClick = () => {
         const statusOrder = ['not-started', 'in-progress', 'completed'];
         const currentIndex = statusOrder.indexOf(status);
         const nextIndex = (currentIndex + 1) % statusOrder.length;
         const nextStatus = statusOrder[nextIndex];
-        
-        // Вызываем функцию изменения статуса
         onStatusChange(id, nextStatus);
+    };
+
+    const handleNotesChange = (e) => {
+        onNotesChange(id, e.target.value);
     };
 
     return (
         <div 
             className={`technology-card status-${status}`}
-            onClick={handleClick}
+            onClick={handleCardClick}
         >
             <div className="card-header">
                 <h3 className="card-title">{title}</h3>
@@ -24,6 +27,25 @@ function TechnologyCard({ id, title, description, status, onStatusChange }) {
                 </span>
             </div>
             <p className="card-description">{description}</p>
+            
+            <div className="notes-section">
+                <h4>Мои заметки:</h4>
+                <textarea
+                    value={notes}
+                    onChange={handleNotesChange}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Записывайте сюда важные моменты..."
+                    rows="3"
+                    className="notes-textarea"
+                />
+                <div className="notes-hint">
+                    {notes.length > 0 
+                        ? `Заметка сохранена (${notes.length} символов)`
+                        : 'Добавьте заметку'
+                    }
+                </div>
+            </div>
+
             <div className="card-footer">
                 <div className="progress-indicator">
                     {renderStatusIcon(status)}
@@ -34,7 +56,6 @@ function TechnologyCard({ id, title, description, status, onStatusChange }) {
     );
 }
 
-// Функция для получения текста статуса
 function getStatusText(status) {
     const statusMap = {
         'completed': 'Изучено',
@@ -44,7 +65,6 @@ function getStatusText(status) {
     return statusMap[status] || status;
 }
 
-// Функция для отображения иконки статуса
 function renderStatusIcon(status) {
     switch(status) {
         case 'completed':

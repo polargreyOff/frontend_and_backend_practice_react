@@ -1,78 +1,23 @@
 import './App.css';
 import { useState } from 'react';
+import useTechnologies from './hooks/useTechnologies';
+import ProgressBar from './components/ProgressBar';
 import TechnologyCard from './components/TechnologyCard';
-import ProgressHeader from './components/ProgressHeader';
 import QuickActions from './components/QuickActions';
 import FilterTabs from './components/FilterTabs';
 
 function App() {
-    // Состояние для массива технологий
-    const [technologies, setTechnologies] = useState([
-        { 
-            id: 1, 
-            title: 'HTML CSS', 
-            description: 'Изучение базовых веб технологий', 
-            status: 'completed' 
-        },
-        { 
-            id: 2, 
-            title: 'React', 
-            description: 'Фреймворк для веб разработки', 
-            status: 'completed' 
-        },
-        { 
-            id: 3, 
-            title: 'Redux', 
-            description: 'Работа с глобальным состоянием', 
-            status: 'completed' 
-        },
-        { 
-            id: 4, 
-            title: 'Vue', 
-            description: 'Ещё один фреймворк', 
-            status: 'completed' 
-        },
-        { 
-            id: 5, 
-            title: 'Angular', 
-            description: 'и ещё один', 
-            status: 'in-progress' 
-        },
-        { 
-            id: 6, 
-            title: 'docker, ci/cd, k8s', 
-            description: 'devops штучки', 
-            status: 'not-started' 
-        }
-    ]);
+    const { 
+        technologies, 
+        updateStatus, 
+        updateNotes, 
+        markAllCompleted, 
+        resetAllStatuses, 
+        progress 
+    } = useTechnologies();
 
-    // Состояние для активного фильтра
     const [activeFilter, setActiveFilter] = useState('all');
 
-    // Функция для изменения статуса технологии
-    const handleStatusChange = (id, newStatus) => {
-        setTechnologies(prevTech => 
-            prevTech.map(tech => 
-                tech.id === id ? { ...tech, status: newStatus } : tech
-            )
-        );
-    };
-
-    // Функция для отметки всех как выполненных
-    const markAllCompleted = () => {
-        setTechnologies(prevTech => 
-            prevTech.map(tech => ({ ...tech, status: 'completed' }))
-        );
-    };
-
-    // Функция для сброса всех статусов
-    const resetAllStatuses = () => {
-        setTechnologies(prevTech => 
-            prevTech.map(tech => ({ ...tech, status: 'not-started' }))
-        );
-    };
-
-    // Фильтрация технологий по активному фильтру
     const filteredTechnologies = technologies.filter(tech => {
         switch(activeFilter) {
             case 'completed':
@@ -82,7 +27,7 @@ function App() {
             case 'not-started':
                 return tech.status === 'not-started';
             default:
-                return true; // 'all'
+                return true;
         }
     });
 
@@ -91,13 +36,19 @@ function App() {
             <header className="App-header">
                 <h1>🚀 Трекер изучения технологий</h1>
                 <p>Отслеживайте ваш прогресс в изучении современных технологий</p>
+                <ProgressBar
+                    progress={progress}
+                    label="Общий прогресс"
+                    color="#4CAF50"
+                    animated={true}
+                    height={20}
+                />
             </header>
 
-            <ProgressHeader technologies={technologies} />
-            
             <QuickActions 
                 onMarkAllCompleted={markAllCompleted}
                 onResetAllStatuses={resetAllStatuses}
+                technologies={technologies}
             />
 
             <FilterTabs 
@@ -112,11 +63,9 @@ function App() {
                     {filteredTechnologies.map(technology => (
                         <TechnologyCard
                             key={technology.id}
-                            id={technology.id}
-                            title={technology.title}
-                            description={technology.description}
-                            status={technology.status}
-                            onStatusChange={handleStatusChange}
+                            technology={technology}
+                            onStatusChange={updateStatus}
+                            onNotesChange={updateNotes}
                         />
                     ))}
                 </div>

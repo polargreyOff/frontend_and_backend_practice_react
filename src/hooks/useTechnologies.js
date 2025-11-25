@@ -54,6 +54,7 @@ const initialTechnologies = [
 
 function useTechnologies() {
     const [technologies, setTechnologies] = useLocalStorage('technologies', initialTechnologies);
+    console.log(technologies)
 
      const updateStatus = useCallback((techId, newStatus) => {
         setTechnologies(prev =>

@@ -1,76 +1,77 @@
 import './App.css';
-import { useState } from 'react';
-import useTechnologies from './hooks/useTechnologies';
-import ProgressBar from './components/ProgressBar';
-import TechnologyCard from './components/TechnologyCard';
-import QuickActions from './components/QuickActions';
-import FilterTabs from './components/FilterTabs';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import Navigation from './components/Navigation';
+import ProtectedRoute from './components/ProtectedRoute';
+
+import Home from './pages/Home';
+import TechnologyList from './pages/TechnologyList';
+import TechnologyDetail from './pages/TechnologyDetail';
+import AddTechnology from './pages/AddTechnology';
+import Statistics from './pages/Statistics';
+import Settings from './pages/Settings';
+import Login from './pages/Login';
 
 function App() {
-    const { 
-        technologies, 
-        updateStatus, 
-        updateNotes, 
-        markAllCompleted, 
-        resetAllStatuses, 
-        progress 
-    } = useTechnologies();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [username, setUsername] = useState('');
 
-    const [activeFilter, setActiveFilter] = useState('all');
+    useEffect(() => {
+        const logged = localStorage.getItem('isLoggedIn') === 'true';
+        const user = localStorage.getItem('username') || '';
+        setIsLoggedIn(logged);
+        setUsername(user);
+    }, []);
 
-    const filteredTechnologies = technologies.filter(tech => {
-        switch(activeFilter) {
-            case 'completed':
-                return tech.status === 'completed';
-            case 'in-progress':
-                return tech.status === 'in-progress';
-            case 'not-started':
-                return tech.status === 'not-started';
-            default:
-                return true;
-        }
-    });
+    const handleLogin = (user) => {
+        setIsLoggedIn(true);
+        setUsername(user);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('username', user);
+    };
+
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        setUsername('');
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('username');
+    };
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1>🚀 Трекер изучения технологий</h1>
-                <p>Отслеживайте ваш прогресс в изучении современных технологий</p>
-                <ProgressBar
-                    progress={progress}
-                    label="Общий прогресс"
-                    color="#4CAF50"
-                    animated={true}
-                    height={20}
-                />
-            </header>
+        <Router basename='frontend_and_backend_practice_react'>
+            <Navigation isLoggedIn={isLoggedIn} username={username} onLogout={handleLogout} />
 
-            <QuickActions 
-                onMarkAllCompleted={markAllCompleted}
-                onResetAllStatuses={resetAllStatuses}
-                technologies={technologies}
-            />
+            <div className="app-container">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/technologies" element={<TechnologyList />} />
+                    <Route path="/technology/:id" element={<TechnologyDetail />} />
+                    <Route path="/add-technology" element={<AddTechnology />} />
+                    <Route path="/login" element={<Login onLogin={handleLogin} />} />
 
-            <FilterTabs 
-                activeFilter={activeFilter}
-                onFilterChange={setActiveFilter}
-                technologies={technologies}
-            />
-            
-            <main className="technologies-container">
-                <h2>Дорожная карта технологий ({filteredTechnologies.length})</h2>
-                <div className="technologies-list">
-                    {filteredTechnologies.map(technology => (
-                        <TechnologyCard
-                            key={technology.id}
-                            technology={technology}
-                            onStatusChange={updateStatus}
-                            onNotesChange={updateNotes}
-                        />
-                    ))}
-                </div>
-            </main>
-        </div>
+                    {/* защищенные маршруты */}
+                    <Route
+                        path="/statistics"
+                        element={
+                            <ProtectedRoute isLoggedIn={isLoggedIn}>
+                                <Statistics />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/settings"
+                        element={
+                            <ProtectedRoute isLoggedIn={isLoggedIn}>
+                                <Settings setIsLoggedIn={setIsLoggedIn} />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* fallback: можно добавить 404 */}
+                </Routes>
+            </div>
+        </Router>
     );
 }
 

@@ -40,8 +40,7 @@ function App() {
     };
 
     return (
-        // для локалки basename='frontend_and_backend_practice_react'
-        <Router>
+        <Router basename='frontend_and_backend_practice_react'>
             <Navigation isLoggedIn={isLoggedIn} username={username} onLogout={handleLogout} />
 
             <div className="app-container">

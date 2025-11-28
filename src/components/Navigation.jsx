@@ -11,6 +11,7 @@ function Navigation({ isLoggedIn, username, onLogout }) {
                 <Link to="/" className="nav-brand">🚀 Трекер технологий</Link>
                 <Link className={isActive('/technologies') ? 'active' : ''} to="/technologies">Все технологии</Link>
                 <Link className={isActive('/add-technology') ? 'active' : ''} to="/add-technology">Добавить</Link>
+                <Link className={isActive('/search') ? 'active' : ''} to="/search">Поиск    </Link>
                 <Link className={isActive('/statistics') ? 'active' : ''} to="/statistics">Статистика</Link>
                 <Link className={isActive('/settings') ? 'active' : ''} to="/settings">Настройки</Link>
             </div>

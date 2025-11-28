@@ -12,6 +12,7 @@ import AddTechnology from './pages/AddTechnology';
 import Statistics from './pages/Statistics';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
+import ProductSearch from './components/ProductSearch';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -39,7 +40,8 @@ function App() {
     };
 
     return (
-        <Router basename='frontend_and_backend_practice_react'>
+        // для локалки basename='frontend_and_backend_practice_react'
+        <Router>
             <Navigation isLoggedIn={isLoggedIn} username={username} onLogout={handleLogout} />
 
             <div className="app-container">
@@ -49,6 +51,7 @@ function App() {
                     <Route path="/technology/:id" element={<TechnologyDetail />} />
                     <Route path="/add-technology" element={<AddTechnology />} />
                     <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                    <Route path="/search" element={<ProductSearch/>} />
 
                     {/* защищенные маршруты */}
                     <Route

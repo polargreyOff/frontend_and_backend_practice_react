@@ -54,13 +54,27 @@ const initialTechnologies = [
 
 function useTechnologies() {
     const [technologies, setTechnologies] = useLocalStorage('technologies', initialTechnologies);
-    console.log(technologies)
 
-     const updateStatus = useCallback((techId, newStatus) => {
+    const updateStatus = useCallback((techId, newStatus) => {
         setTechnologies(prev =>
             prev.map(tech =>
                 tech.id === techId ? { ...tech, status: newStatus } : tech
             )
+        );
+    }, [setTechnologies]);
+
+    // 🔄 Новая функция для циклического изменения статуса
+    const cycleStatus = useCallback((techId) => {
+        setTechnologies(prev =>
+            prev.map(tech => {
+                if (tech.id === techId) {
+                    const statusOrder = ['not-started', 'in-progress', 'completed'];
+                    const currentIndex = statusOrder.indexOf(tech.status);
+                    const nextIndex = (currentIndex + 1) % statusOrder.length;
+                    return { ...tech, status: statusOrder[nextIndex] };
+                }
+                return tech;
+            })
         );
     }, [setTechnologies]);
 
@@ -94,6 +108,7 @@ function useTechnologies() {
         technologies,
         setTechnologies,
         updateStatus,
+        cycleStatus, // 🔄 Экспортируем новую функцию
         updateNotes,
         markAllCompleted,
         resetAllStatuses,

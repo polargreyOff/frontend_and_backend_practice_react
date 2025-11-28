@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useTechnologies from "../hooks/useTechnologies";
+import './AddTechnology.css';
 
 function AddTechnology() {
     const { technologies, setTechnologies } = useTechnologies();
@@ -21,25 +22,34 @@ function AddTechnology() {
         };
 
         setTechnologies([...technologies, newTech]);
-
         navigate("/technologies");
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="add-tech-form" onSubmit={handleSubmit}>
             <h1>Добавить технологию</h1>
 
-            <label>Название:</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <div className="form-group">
+                <label>Название:</label>
+                <input 
+                    value={title} 
+                    onChange={(e) => setTitle(e.target.value)} 
+                    required 
+                    placeholder="Введите название технологии"
+                />
+            </div>
 
-            <label>Описание:</label>
-            <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-            />
+            <div className="form-group">
+                <label>Описание:</label>
+                <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                    placeholder="Опишите технологию..."
+                />
+            </div>
 
-            <button type="submit">Добавить</button>
+            <button type="submit" className="submit-btn">Добавить технологию</button>
         </form>
     );
 }

@@ -1,56 +1,32 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import useTechnologies from "../hooks/useTechnologies";
+// src/pages/AddTechnology.jsx
+import { useNavigate } from 'react-router-dom';
+import TechnologyForm from '../components/TechnologyForm';
+import useTechnologies from '../hooks/useTechnologies';
 import './AddTechnology.css';
 
 function AddTechnology() {
     const { technologies, setTechnologies } = useTechnologies();
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
+    const handleSave = (newData) => {
         const newTech = {
             id: Date.now(),
-            title,
-            description,
-            notes: "",
-            status: "not-started",
+            ...newData,
+            status: 'not-started',
+            notes: '' // сохраняем совместимость с существующей моделью
         };
-
         setTechnologies([...technologies, newTech]);
-        navigate("/technologies");
+        navigate('/technologies');
+    };
+
+    const handleCancel = () => {
+        navigate('/technologies');
     };
 
     return (
-        <form className="add-tech-form" onSubmit={handleSubmit}>
-            <h1>Добавить технологию</h1>
-
-            <div className="form-group">
-                <label>Название:</label>
-                <input 
-                    value={title} 
-                    onChange={(e) => setTitle(e.target.value)} 
-                    required 
-                    placeholder="Введите название технологии"
-                />
-            </div>
-
-            <div className="form-group">
-                <label>Описание:</label>
-                <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    placeholder="Опишите технологию..."
-                />
-            </div>
-
-            <button type="submit" className="submit-btn">Добавить технологию</button>
-        </form>
+        <div className="page add-technology-page">
+            <TechnologyForm onSave={handleSave} onCancel={handleCancel} />
+        </div>
     );
 }
 

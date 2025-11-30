@@ -29,7 +29,7 @@ function TechnologyDetail() {
     return (
         <div className="tech-detail">
             <Link to="/technologies" className="back-link">← Назад к списку</Link>
-            
+
             <div className="tech-header">
                 <h1>{tech.title}</h1>
                 <p className="tech-description">{tech.description}</p>
@@ -38,25 +38,30 @@ function TechnologyDetail() {
             <div className="status-section">
                 <h3>Статус: {getStatusText(tech.status)}</h3>
                 <div className="status-buttons">
-                    <button 
+                    <button
                         className={`status-btn ${tech.status === 'not-started' ? 'active' : ''}`}
                         onClick={() => updateStatus(tech.id, "not-started")}
                     >
                         Не начато
                     </button>
-                    <button 
+                    <button
                         className={`status-btn ${tech.status === 'in-progress' ? 'active' : ''}`}
                         onClick={() => updateStatus(tech.id, "in-progress")}
                     >
                         В процессе
                     </button>
-                    <button 
+                    <button
                         className={`status-btn ${tech.status === 'completed' ? 'active' : ''}`}
                         onClick={() => updateStatus(tech.id, "completed")}
                     >
                         Изучено
                     </button>
                 </div>
+            </div>
+            <div className="actions-section" style={{ marginTop: '20px' }}>
+                <Link to={`/edit-technology/${tech.id}`} className="btn-edit">
+                    ✏️ Редактировать технологию
+                </Link>
             </div>
 
             <div className="notes-section">

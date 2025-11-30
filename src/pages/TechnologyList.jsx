@@ -1,5 +1,6 @@
 import useTechnologies from "../hooks/useTechnologies";
 import { Link } from "react-router-dom";
+import BulkStatusEditor from "../components/BulkStatusEditor";
 
 function TechnologyList() {
     const { technologies, progress, cycleStatus } = useTechnologies();
@@ -40,6 +41,7 @@ function TechnologyList() {
                     </div>
                 ))}
             </div>
+            <BulkStatusEditor/>
         </div>
     );
 }

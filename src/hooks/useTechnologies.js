@@ -21,7 +21,7 @@ const initialTechnologies = [
     { 
         id: 3, 
         title: 'Redux', 
-        description: 'Работа с глобальным состоянием', 
+        description: 'Не localStorage', 
         status: 'completed',
         notes: '',
         category: 'frontend'

@@ -13,6 +13,7 @@ import Statistics from './pages/Statistics';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import ProductSearch from './components/ProductSearch';
+import EditTechnology from './pages/EditTechnology';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -51,6 +52,7 @@ function App() {
                     <Route path="/add-technology" element={<AddTechnology />} />
                     <Route path="/login" element={<Login onLogin={handleLogin} />} />
                     <Route path="/search" element={<ProductSearch/>} />
+                    <Route path="/edit-technology/:id" element={<EditTechnology />} />
 
                     {/* защищенные маршруты */}
                     <Route

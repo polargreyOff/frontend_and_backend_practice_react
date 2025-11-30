@@ -1,10 +1,32 @@
-import { useState } from 'react';
+// src/pages/Settings.jsx
+import { useState, useContext } from 'react';
+import {
+  Container,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  ButtonGroup,
+  Alert,
+  FormControlLabel,
+  Switch,
+  Divider
+} from '@mui/material';
+import { ThemeContext } from '../context/ThemeContext';
 import useTechnologies from '../hooks/useTechnologies';
-import './Settings.css';
 
 function Settings() {
     const { technologies, setTechnologies } = useTechnologies();
     const [importText, setImportText] = useState('');
+    const [message, setMessage] = useState({ type: '', text: '' });
+    const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+
+    const showMessage = (type, text) => {
+        setMessage({ type, text });
+        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+    };
 
     const handleExport = () => {
         const data = {
@@ -20,7 +42,7 @@ function Settings() {
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
-        alert('Экспорт завершён — файл скачан.');
+        showMessage('success', 'Экспорт завершён — файл скачан.');
     };
 
     const handleImport = () => {
@@ -28,15 +50,15 @@ function Settings() {
             const parsed = JSON.parse(importText);
             if (Array.isArray(parsed)) {
                 setTechnologies(parsed);
-                alert('Импортирован массив технологий.');
+                showMessage('success', 'Импортирован массив технологий.');
             } else if (parsed && Array.isArray(parsed.technologies)) {
                 setTechnologies(parsed.technologies);
-                alert('Импортирован формат экспорта.');
+                showMessage('success', 'Импортирован формат экспорта.');
             } else {
-                alert('Неверный формат JSON. Ожидается массив или { technologies: [...] }');
+                showMessage('error', 'Неверный формат JSON. Ожидается массив или { technologies: [...] }');
             }
         } catch (err) {
-            alert('Ошибка парсинга JSON: ' + err.message);
+            showMessage('error', 'Ошибка парсинга JSON: ' + err.message);
         }
     };
 
@@ -44,46 +66,102 @@ function Settings() {
         if (!confirm('Сбросить все технологии в состояние "Не начато"?')) return;
         const reset = technologies.map(t => ({ ...t, status: 'not-started' }));
         setTechnologies(reset);
-        alert('Статусы сброшены.');
+        showMessage('success', 'Статусы сброшены.');
     };
 
     const handleClearAll = () => {
         if (!confirm('Полностью очистить локальное хранилище технологий? Это необратимо.')) return;
         setTechnologies([]);
-        alert('Данные очищены.');
+        showMessage('success', 'Данные очищены.');
     };
 
     return (
-        <div className="page settings-page">
-            <h1>Настройки</h1>
+        <Container maxWidth="md" sx={{ py: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+                Настройки
+            </Typography>
 
-            <div className="setting-block">
-                <h3>Экспорт / импорт данных</h3>
-                <div className="btns">
-                    <button onClick={handleExport} className="btn">Экспортировать</button>
-                    <button onClick={() => { setImportText(JSON.stringify({ technologies }, null, 2)); }} className="btn">Вставить пример в поле импорт</button>
-                </div>
+            {message.text && (
+                <Alert severity={message.type} sx={{ mb: 2 }}>
+                    {message.text}
+                </Alert>
+            )}
 
-                <textarea
-                    placeholder='Вставьте JSON сюда (массив или {"technologies": [...]})'
-                    value={importText}
-                    onChange={(e) => setImportText(e.target.value)}
-                    rows={8}
-                />
+            {/* Переключение темы */}
+            <Card sx={{ mb: 3 }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                        Внешний вид
+                    </Typography>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={isDarkMode}
+                                onChange={toggleTheme}
+                                color="primary"
+                            />
+                        }
+                        label={isDarkMode ? 'Тёмная тема' : 'Светлая тема'}
+                    />
+                </CardContent>
+            </Card>
 
-                <div className="btns">
-                    <button onClick={handleImport} className="btn btn-primary">Импортировать</button>
-                </div>
-            </div>
+            <Card sx={{ mb: 3 }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                        Экспорт / импорт данных
+                    </Typography>
+                    
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                        <Button variant="outlined" onClick={handleExport}>
+                            Экспортировать
+                        </Button>
+                        <Button 
+                            variant="outlined" 
+                            onClick={() => { setImportText(JSON.stringify({ technologies }, null, 2)); }}
+                        >
+                            Вставить пример
+                        </Button>
+                    </Box>
 
-            <div className="setting-block">
-                <h3>Действия</h3>
-                <div className="btns">
-                    <button onClick={handleReset} className="btn">Сбросить статусы</button>
-                    <button onClick={handleClearAll} className="btn btn-danger">Очистить все</button>
-                </div>
-            </div>
-        </div>
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={8}
+                        placeholder='Вставьте JSON сюда (массив или {"technologies": [...]})'
+                        value={importText}
+                        onChange={(e) => setImportText(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+
+                    <Button 
+                        variant="contained" 
+                        onClick={handleImport}
+                    >
+                        Импортировать
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                        Действия
+                    </Typography>
+                    <ButtonGroup variant="outlined" sx={{ gap: 1, flexWrap: 'wrap' }}>
+                        <Button onClick={handleReset}>
+                            Сбросить статусы
+                        </Button>
+                        <Button 
+                            onClick={handleClearAll}
+                            color="error"
+                        >
+                            Очистить все
+                        </Button>
+                    </ButtonGroup>
+                </CardContent>
+            </Card>
+        </Container>
     );
 }
 

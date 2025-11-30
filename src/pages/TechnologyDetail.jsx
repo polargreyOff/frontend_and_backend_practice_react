@@ -1,6 +1,18 @@
+// src/pages/TechnologyDetail.jsx
 import { useParams, Link } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  ButtonGroup,
+  Chip
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import useTechnologies from "../hooks/useTechnologies";
-import './TechnologyDetail.css';
 
 function TechnologyDetail() {
     const { id } = useParams();
@@ -10,10 +22,18 @@ function TechnologyDetail() {
 
     if (!tech) {
         return (
-            <div className="tech-detail">
-                <h2>Технология не найдена</h2>
-                <Link to="/technologies" className="back-link">← Назад к списку</Link>
-            </div>
+            <Container maxWidth="lg" sx={{ py: 4 }}>
+                <Typography variant="h4" component="h1" gutterBottom>
+                    Технология не найдена
+                </Typography>
+                <Button 
+                    component={Link} 
+                    to="/technologies" 
+                    startIcon={<ArrowBackIcon />}
+                >
+                    Назад к списку
+                </Button>
+            </Container>
         );
     }
 
@@ -26,54 +46,107 @@ function TechnologyDetail() {
         return statusMap[status] || status;
     };
 
+    const statusButtons = [
+        { value: 'not-started', label: 'Не начато' },
+        { value: 'in-progress', label: 'В процессе' },
+        { value: 'completed', label: 'Изучено' }
+    ];
+
     return (
-        <div className="tech-detail">
-            <Link to="/technologies" className="back-link">← Назад к списку</Link>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Button 
+                component={Link} 
+                to="/technologies" 
+                startIcon={<ArrowBackIcon />}
+                sx={{ mb: 3 }}
+            >
+                Назад к списку
+            </Button>
 
-            <div className="tech-header">
-                <h1>{tech.title}</h1>
-                <p className="tech-description">{tech.description}</p>
-            </div>
+            {/* Убираем Grid, делаем обычный поток */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {/* Заголовок и описание */}
+                <Card>
+                    <CardContent>
+                        <Typography variant="h4" component="h1" gutterBottom>
+                            {tech.title}
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary" paragraph>
+                            {tech.description}
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            <Chip label={tech.category} variant="outlined" />
+                            <Chip 
+                                label={getStatusText(tech.status)} 
+                                color={
+                                    tech.status === 'completed' ? 'success' : 
+                                    tech.status === 'in-progress' ? 'warning' : 'default'
+                                } 
+                            />
+                        </Box>
+                    </CardContent>
+                </Card>
 
-            <div className="status-section">
-                <h3>Статус: {getStatusText(tech.status)}</h3>
-                <div className="status-buttons">
-                    <button
-                        className={`status-btn ${tech.status === 'not-started' ? 'active' : ''}`}
-                        onClick={() => updateStatus(tech.id, "not-started")}
-                    >
-                        Не начато
-                    </button>
-                    <button
-                        className={`status-btn ${tech.status === 'in-progress' ? 'active' : ''}`}
-                        onClick={() => updateStatus(tech.id, "in-progress")}
-                    >
-                        В процессе
-                    </button>
-                    <button
-                        className={`status-btn ${tech.status === 'completed' ? 'active' : ''}`}
-                        onClick={() => updateStatus(tech.id, "completed")}
-                    >
-                        Изучено
-                    </button>
-                </div>
-            </div>
-            <div className="actions-section" style={{ marginTop: '20px' }}>
-                <Link to={`/edit-technology/${tech.id}`} className="btn-edit">
-                    ✏️ Редактировать технологию
-                </Link>
-            </div>
+                {/* Статус и действия в одной строке на десктопе */}
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+                    {/* Статус */}
+                    <Card sx={{ flex: 1 }}>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom>
+                                Статус: {getStatusText(tech.status)}
+                            </Typography>
+                            <ButtonGroup fullWidth variant="outlined">
+                                {statusButtons.map((status) => (
+                                    <Button
+                                        key={status.value}
+                                        variant={tech.status === status.value ? "contained" : "outlined"}
+                                        onClick={() => updateStatus(tech.id, status.value)}
+                                    >
+                                        {status.label}
+                                    </Button>
+                                ))}
+                            </ButtonGroup>
+                        </CardContent>
+                    </Card>
 
-            <div className="notes-section">
-                <h3>Заметки</h3>
-                <textarea
-                    className="notes-textarea"
-                    value={tech.notes}
-                    onChange={(e) => updateNotes(tech.id, e.target.value)}
-                    placeholder="Добавьте свои заметки по изучению этой технологии..."
-                />
-            </div>
-        </div>
+                    {/* Действия */}
+                    <Card sx={{ flex: 1 }}>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom>
+                                Действия
+                            </Typography>
+                            <Button 
+                                fullWidth
+                                variant="contained" 
+                                component={Link}
+                                to={`/edit-technology/${tech.id}`}
+                                startIcon="✏️"
+                            >
+                                Редактировать технологию
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </Box>
+
+                {/* Заметки - на всю ширину */}
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                            Заметки
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={6}
+                            value={tech.notes}
+                            onChange={(e) => updateNotes(tech.id, e.target.value)}
+                            placeholder="Добавьте свои заметки по изучению этой технологии..."
+                            variant="outlined"
+                        />
+                    </CardContent>
+                </Card>
+            </Box>
+        </Container>
     );
 }
 

@@ -1,6 +1,11 @@
 // src/pages/EditTechnology.jsx
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  Alert
+} from '@mui/material';
 import TechnologyForm from '../components/TechnologyForm';
 import useTechnologies from '../hooks/useTechnologies';
 
@@ -36,13 +41,16 @@ function EditTechnology() {
     if (!techToEdit) return null;
 
     return (
-        <div className="page edit-technology-page">
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+                Редактирование технологии
+            </Typography>
             <TechnologyForm
                 onSave={handleSave}
                 onCancel={handleCancel}
                 initialData={techToEdit}
             />
-        </div>
+        </Container>
     );
 }
 

@@ -1,6 +1,22 @@
+// src/components/BulkStatusEditor.jsx
 import { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Paper,
+  Chip
+} from '@mui/material';
 import useTechnologies from '../hooks/useTechnologies';
-import './BulkStatusEditor.css';
 
 function BulkStatusEditor() {
     const { technologies, setTechnologies } = useTechnologies();
@@ -48,52 +64,73 @@ function BulkStatusEditor() {
     };
 
     return (
-        <div className="bulk-editor">
-            <h3>Массовое редактирование статусов</h3>
+        <Paper sx={{ p: 3, mt: 4 }}>
+            <Typography variant="h6" gutterBottom>
+                Массовое редактирование статусов
+            </Typography>
 
-            <div className="bulk-controls">
-                <button type="button" onClick={selectAll} className="btn-secondary">
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center', mb: 3 }}>
+                <Button variant="outlined" onClick={selectAll}>
                     Выбрать все
-                </button>
-                <button type="button" onClick={clearSelection} className="btn-secondary">
+                </Button>
+                <Button variant="outlined" onClick={clearSelection}>
                     Снять выбор
-                </button>
+                </Button>
 
-                <div className="status-select-group">
-                    <label htmlFor="bulk-status">Новый статус:</label>
-                    <select
-                        id="bulk-status"
+                <FormControl sx={{ minWidth: 200 }}>
+                    <InputLabel>Новый статус</InputLabel>
+                    <Select
                         value={newStatus}
                         onChange={(e) => setNewStatus(e.target.value)}
-                        aria-label="Выберите статус для массового обновления"
+                        label="Новый статус"
                     >
                         {Object.entries(statusLabels).map(([value, label]) => (
-                            <option key={value} value={value}>{label}</option>
+                            <MenuItem key={value} value={value}>{label}</MenuItem>
                         ))}
-                    </select>
-                </div>
+                    </Select>
+                </FormControl>
 
-                <button
-                    type="button"
+                <Button
+                    variant="contained"
                     onClick={applyBulkUpdate}
                     disabled={selectedIds.size === 0}
-                    className="btn-primary"
+                    sx={{ ml: 'auto' }}
                 >
                     Обновить статус ({selectedIds.size})
-                </button>
-            </div>
+                </Button>
+            </Box>
 
-            <div className="tech-checkbox-list" role="listbox" aria-multiselectable="true">
+            <List sx={{ maxHeight: 300, overflow: 'auto', border: 1, borderColor: 'divider', borderRadius: 1 }}>
                 {technologies.map(tech => (
-
-                    <label className="tech-checkbox-item">
-                        <input type="checkbox" checked={selectedIds.has(tech.id)} onChange = {() => toggleSelect(tech.id)} />
-                        <span className="tech-title">{tech.title}</span>
-                        <span className="tech-current-status">({statusLabels[tech.status]})</span>
-                    </label>
+                    <ListItem
+                        key={tech.id}
+                        dense
+                        button
+                        onClick={() => toggleSelect(tech.id)}
+                    >
+                        <ListItemIcon>
+                            <Checkbox
+                                edge="start"
+                                checked={selectedIds.has(tech.id)}
+                                tabIndex={-1}
+                                disableRipple
+                            />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={tech.title}
+                            secondary={
+                                <Chip
+                                    label={statusLabels[tech.status]}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{ mt: 0.5 }}
+                                />
+                            }
+                        />
+                    </ListItem>
                 ))}
-            </div>
-        </div>
+            </List>
+        </Paper>
     );
 }
 

@@ -1,41 +1,125 @@
-import { useState } from 'react';
+// src/pages/Login.jsx
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Auth.css';
+import {
+  Container,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Alert
+} from '@mui/material';
+import { ThemeContext } from '../context/ThemeContext';
 
 function Login({ onLogin }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { isDarkMode } = useContext(ThemeContext);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setError('');
 
-        // простая фейковая авторизация
         if (username.trim() && password === 'password') {
             onLogin(username.trim());
             navigate('/technologies');
         } else {
-            alert('Либо пустой логин, либо неверный пароль. (пароль: password)');
+            setError('Либо пустой логин, либо неверный пароль. (пароль: password)');
         }
     };
 
     return (
-        <div className="auth-page">
-            <form className="auth-form" onSubmit={handleSubmit}>
-                <h2>Вход</h2>
-                <label>Имя пользователя</label>
-                <input value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <Container component="main" maxWidth="xs">
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Paper 
+                    elevation={3} 
+                    sx={{ 
+                        p: 4, 
+                        width: '100%',
+                        backgroundColor: 'background.paper',
+                        backgroundImage: 'none',
+                        color: 'text.primary'
+                    }}
+                >
+                    <Typography component="h1" variant="h5" align="center" gutterBottom>
+                        Вход
+                    </Typography>
+                    
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 2 }}>
+                            {error}
+                        </Alert>
+                    )}
 
-                <label>Пароль</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-
-                <div className="auth-actions">
-                    <button type="submit" className="btn-primary">Войти</button>
-                </div>
-
-                <p className="auth-hint">Подсказка: любой логин + пароль <b>password</b></p>
-            </form>
-        </div>
+                    <Box 
+                        component="form" 
+                        onSubmit={handleSubmit} 
+                        sx={{ 
+                            mt: 1,
+                            // Явно задаем прозрачный фон для формы
+                            backgroundColor: 'transparent'
+                        }}
+                    >
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="username"
+                            label="Имя пользователя"
+                            name="username"
+                            autoComplete="username"
+                            autoFocus
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    backgroundColor: 'background.default',
+                                }
+                            }}
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Пароль"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    backgroundColor: 'background.default',
+                                }
+                            }}
+                        />
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Войти
+                        </Button>
+                        
+                        <Typography variant="body2" color="text.secondary" align="center">
+                            Подсказка: любой логин + пароль <b>password</b>
+                        </Typography>
+                    </Box>
+                </Paper>
+            </Box>
+        </Container>
     );
 }
 
